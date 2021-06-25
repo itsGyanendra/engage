@@ -1,7 +1,8 @@
 import React, { useContext } from 'react';
 import { Button, Grid, Typography, Paper, makeStyles } from '@material-ui/core';
-
+import {Assignment, Phone, PhoneDisabled } from "@material-ui/icons";
 import { SocketContext } from '../SocketContext';
+
 
 const useStyles = makeStyles((theme) => ({
   video: {
@@ -24,17 +25,30 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const VideoPlayer = () => {
-  const { name, callAccepted, myVideo, userVideo, callEnded, stream, call } = useContext(SocketContext);
+  const { start,name, callAccepted, myVideo, userVideo, callEnded, stream, call ,videotoggle,audiotoggle, sharescreen} = useContext(SocketContext);
+  
   const classes = useStyles();
 
   return (
+
     <Grid container className={classes.gridContainer}>
+      <Button variant="contained" color="primary" startIcon={<Phone fontSize="large" />} fullWidth onClick={() => start()} className={classes.margin}>
+                    start
+              </Button>
       {stream && (
         <Paper className={classes.paper}>
           <Grid item xs={12} md={6}>
             <Typography variant="h5" gutterBottom>{name || 'Name'}</Typography>
             <video playsInline muted ref={myVideo} autoPlay className={classes.video} />
-            
+            <Button variant="contained" color="primary" startIcon={<Phone fontSize="large" />} fullWidth onClick={() => videotoggle()} className={classes.margin}>
+                    Video on/off
+              </Button>
+              <Button variant="contained" color="primary" startIcon={<Phone fontSize="large" />} fullWidth onClick={() => audiotoggle()} className={classes.margin}>
+                    audio on/off
+              </Button>
+              <Button variant="contained" color="primary" startIcon={<Phone fontSize="large" />} fullWidth onClick={() => sharescreen()} className={classes.margin}>
+                    Share screen
+              </Button>
           </Grid>
         </Paper>
       )}
@@ -46,7 +60,9 @@ const VideoPlayer = () => {
           </Grid>
         </Paper>
       )}
+       
     </Grid>
+
   );
 };
 
