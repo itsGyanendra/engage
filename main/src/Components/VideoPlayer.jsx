@@ -25,16 +25,14 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const VideoPlayer = () => {
-  const { start,name, callAccepted, myVideo, userVideo, callEnded, stream, call ,videotoggle,audiotoggle, sharescreen} = useContext(SocketContext);
+  const {name, callAccepted, myVideo, userVideo, callEnded, stream, call ,videotoggle,audiotoggle, sharescreen} = useContext(SocketContext);
   
   const classes = useStyles();
 
   return (
 
     <Grid container className={classes.gridContainer}>
-      <Button variant="contained" color="primary" startIcon={<Phone fontSize="large" />} fullWidth onClick={() => start()} className={classes.margin}>
-                    start
-              </Button>
+      
       {stream && (
         <Paper className={classes.paper}>
           <Grid item xs={12} md={6}>

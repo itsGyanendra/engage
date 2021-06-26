@@ -10,6 +10,8 @@ const socket = io('https://gyan-engage.herokuapp.com/');
 const ContextProvider = ({ children }) => {
   const [callAccepted, setCallAccepted] = useState(false);
   const [callEnded, setCallEnded] = useState(false);
+  const [screenshare, setscreenshare] = useState(false);
+  const [screenstream, setscreenstream] = useState();
   const [stream, setStream] = useState();
   const [name, setName] = useState('');
   const [call, setCall] = useState({});
@@ -19,21 +21,23 @@ const ContextProvider = ({ children }) => {
   const userVideo = useRef();
   const connectionRef = useRef();
  
-
-  useEffect(() => {
-    navigator.mediaDevices.getUserMedia({ video: true, audio: true })
-      .then((currentStream) => {
-        setStream(currentStream);
-
-        myVideo.current.srcObject = currentStream;
+  
+    useEffect(() => {
+      navigator.mediaDevices.getUserMedia({ video: true, audio: true })
+        .then((currentStream) => {
+          setStream(currentStream);
+  
+          myVideo.current.srcObject = currentStream;
+        });
+  
+      socket.on('me', (id) => setMe(id));
+  
+      socket.on('callUser', ({ from, name: callerName, signal }) => {
+        setCall({ isReceivingCall: true, from, name: callerName, signal });
       });
+    }, []);
+    
 
-    socket.on('me', (id) => setMe(id));
-
-    socket.on('callUser', ({ from, name: callerName, signal }) => {
-      setCall({ isReceivingCall: true, from, name: callerName, signal });
-    });
-  }, []);
 
   const videotoggle =() =>{
     stream.getVideoTracks()[0].enabled = !stream.getVideoTracks()[0].enabled
@@ -43,13 +47,21 @@ const ContextProvider = ({ children }) => {
     stream.getAudioTracks()[0].enabled = !stream.getAudioTracks()[0].enabled
   };
   const sharescreen =()=>{
-
+    setscreenshare(true);
     navigator.mediaDevices.getDisplayMedia({cursor:true})
     .then(screenStream=>{
-      connectionRef.current.replaceTrack(stream.getVideoTracks()[0],screenStream.getVideoTracks()[0],stream)
+      setscreenstream(screenStream);
+      if(connectionRef.current!=undefined){
+        connectionRef.current.replaceTrack(stream.getVideoTracks()[0],screenStream.getVideoTracks()[0],stream)
+      }
+      
       myVideo.current.srcObject=screenStream
       screenStream.getTracks()[0].onended = () =>{
-      connectionRef.current.replaceTrack(screenStream.getVideoTracks()[0],stream.getVideoTracks()[0],stream)
+        setscreenshare(false);
+        setscreenstream();
+        if(connectionRef.current!=undefined){
+          connectionRef.current.replaceTrack(screenStream.getVideoTracks()[0],stream.getVideoTracks()[0],stream)
+        }
       myVideo.current.srcObject=stream
       }
     })
@@ -67,10 +79,14 @@ const ContextProvider = ({ children }) => {
     peer.on('stream', (currentStream) => {
       userVideo.current.srcObject = currentStream;
     });
-
+    
+    
     peer.signal(call.signal);
     
     connectionRef.current = peer;
+    if(screenshare==true){
+      connectionRef.current.replaceTrack(stream.getVideoTracks()[0],screenstream.getVideoTracks()[0],stream)
+    }
     
   };
 
@@ -90,7 +106,7 @@ const ContextProvider = ({ children }) => {
 
       peer.signal(signal);
     });
-
+    
      
     connectionRef.current = peer;
   };

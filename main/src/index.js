@@ -1,14 +1,14 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import {ContextProvider } from "./SocketContext";
+
 import './index.css';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
 
 ReactDOM.render(
-  <ContextProvider>
+  
     <App />
-  </ContextProvider>,
+    ,
   document.getElementById('root')
 );
 
