@@ -1,17 +1,13 @@
-import React,{ useState,createContext, } from 'react';
-import { Typography, AppBar } from "@material-ui/core";
-import Options from "../Components/Options";
-import Notifications from "../Components/Notifcations";
-import Sidebar from "../Components/sidebar";
-import VideoPlayer from "../Components/VideoPlayer";
+import React, { useState } from 'react';
+import {Button,} from "@material-ui/core";
 import '../css/style.css';
-import Navbar from '../Components/navbar';
-import RecordView from '../Components/recording';
-import { ContextProvider } from '../SocketContext';
+import { ContextProvider} from '../SocketContext';
+import Meet from '../Components/meet';
+import AnimationRevealPage from "../helpers/AnimationRevealPage";
+import  ChatUI  from "../Components/chat";
 
-
-
-const Meet =()=> {
+const Meetpage =()=> {
+  const[showmeet, setshowmeet] =useState(false);
   if(!localStorage.getItem("issignedin")){
     console.log("ss");
     return (
@@ -20,26 +16,30 @@ const Meet =()=> {
         content="0; url = /" /> 
     );
   }
+
   return (
+    <>
+    {showmeet?(
     <ContextProvider>
-       <div className="wrapper">
-       <Sidebar/>
-       <div id="content">
-         <Navbar/>
-      <AppBar position="static" color="inherit">
-        <Typography variant="h2" align="center">Video Chat</Typography>
-      </AppBar>
-      <VideoPlayer/>
-      <RecordView/>
-      <Options>
-      <Notifications/>
-      </Options>
-       </div>  
-    </div>
-  </ContextProvider>
+         <AnimationRevealPage>
+         <Meet/>
+      </AnimationRevealPage>
+      </ContextProvider>
+      ):(
+        <>
+        <Button variant="outlined" style={{justifyContent: 'center'}} color="primary" onClick={()=>setshowmeet(!showmeet)}>Start / Join meet</Button>
+  
+        <ChatUI/>
+        
+        </>
+      )}
+      </>
+      
+      
+      
   
   );
 
 }
 
-export default Meet;
+export default Meetpage;

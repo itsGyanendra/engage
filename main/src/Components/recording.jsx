@@ -1,23 +1,6 @@
-/*import React from "react";
-import { ReactMediaRecorder } from "react-media-recorder";
- 
-const RecordView = () => (
-  <div>
-    <ReactMediaRecorder
-      video
-      render={({ status, startRecording, stopRecording, mediaBlobUrl }) => (
-        <div>
-          <p>{status}</p>
-          <button onClick={startRecording}>Start Recording</button>
-          <button onClick={stopRecording}>Stop Recording</button>
-          <video src={mediaBlobUrl} controls autoPlay loop />
-        </div>
-      )}
-    />
-  </div>
-);
-export default RecordView;*/
 import React from 'react';
+import {Grid,IconButton} from  '@material-ui/core';
+import {FiberManualRecordOutlined,AlbumOutlined,GetAppOutlined,Mic,MicOff}from "@material-ui/icons";
 
 /**
  * Checks whether the argument is an object
@@ -357,39 +340,51 @@ export default function RecordView() {
   React.useEffect(() => clearMediaStream, []);
 
   return (
-    <article>
-      <section>
-        {status !== 'recording' && (
-          <button
-            type="button"
+    
+    <Grid item xs={6} md={3}>
+      
+        <Grid item xs ={7}>
+        {status !== 'recording'&&status!=='paused' && (
+          <IconButton
+            
             onClick={async () => {
               await getMediaStream();
               startRecording();
             }}
           >
-            Start recording
-          </button>
+            <AlbumOutlined/> Start
+          </IconButton>
         )}
         {status === 'recording' && (
-          <button type="button" onClick={pauseRecording}>
-            Pause recording
-          </button>
+          <IconButton  onClick={pauseRecording}>
+            <MicOff fontSize="large" /> Pause
+          </IconButton>
         )}
         {status === 'paused' && (
-          <button type="button" onClick={resumeRecording}>
-            Resume recording
-          </button>
+          <IconButton  onClick={resumeRecording}>
+            <Mic/>Resume
+          </IconButton>
         )}
+        </Grid>
+        <Grid item xs ={5}>
         {status === 'recording' && (
-          <button type="button" onClick={stopRecording}>
-            Stop recording
-          </button>
+          <IconButton  onClick={stopRecording}>
+            <FiberManualRecordOutlined/>
+            stop
+          </IconButton>
         )}
-      </section>
+        {status === 'paused' && (
+          <IconButton  onClick={stopRecording}>
+            <FiberManualRecordOutlined/>
+            stop
+          </IconButton>
+        )}
+       
+      </Grid>
       {status==='stopped'&&(
-        <button onClick={() => Downloadvideo(mediaBlob)}>Download</button>
+        <IconButton onClick={() => Downloadvideo(mediaBlob)}><GetAppOutlined/></IconButton>
       )}
+    </Grid>
       
-    </article>
   );
 }

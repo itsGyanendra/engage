@@ -1,24 +1,47 @@
-
-import React,{useState, useContext} from 'react';
+/****************Importing Necessary Components ****************************/
+import React from 'react';
 import GoogleLogin from 'react-google-login';
-import { BrowserRouter as Redirect} from "react-router-dom";
 
 
 const  Login =()=> {
+  /****************If login is success then name and url is stored in local storage **************/
+  
   const responseGoogle =(response) => {
     localStorage.setItem("name", response.profileObj.name);
     localStorage.setItem("email",response.profileObj.email);
     localStorage.setItem("url",response.profileObj.imageUrl);
     localStorage.setItem("issignedin",true);
-    window.location = "/profile"
+
+    /************If users login first time then tere account for chat will be created ***************/
+    var axios = require('axios');
+    var data = {
+      "username": localStorage.getItem("email"),
+      "secret": "secret123",
+      "email": localStorage.getItem("email"),
+      
+    };
+
+    var config = {
+      method: 'post',
+      url: 'https://api.chatengine.io/users/',
+      headers: {
+        'PRIVATE-KEY': '4657445a-48d5-4c38-b235-b7d1272bbf4c'
+      },
+      data : data
+    };
+
+    axios(config)
+    .then(function (response) {
+      console.log(JSON.stringify(response.data));
+    })
+    .catch(function (error) {
+      console.log(error);
+    });
+    window.location.reload(); // reloading page to sync the login request
+    
     
   }
-  if(localStorage.getItem("issignedin")){
-    return (
-      <meta http-equiv="refresh"
-        content="0; url = /profile" /> 
-    );
-  }
+  
   return (
 
         <GoogleLogin
@@ -26,7 +49,6 @@ const  Login =()=> {
         buttonText="Login"
         onSuccess={responseGoogle}
         isSignedIn={true}
-       
         cookiePolicy={'single_host_origin'}
       />
   
